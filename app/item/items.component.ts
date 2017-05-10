@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 
 import { Item } from "./item";
 import { ItemService } from "./item.service";
-import { SelectedIndexChangedEventData } from "nativescript-drop-down";
+import { SelectedIndexChangedEventData, ValueList } from "nativescript-drop-down";
 
 
 @Component({
@@ -14,17 +14,18 @@ import { SelectedIndexChangedEventData } from "nativescript-drop-down";
 })
 export class ItemsComponent implements OnInit {
     items: Item[];
-    public itemList: Array<string> = [];
+    public itemList: ValueList<Object>;
     public selectedIndex: number = 0;
 
     constructor(private itemService: ItemService,
                 private router: Router) {
+        this.itemList = new ValueList<Object>();
     }
 
     onchange(args: SelectedIndexChangedEventData) {
         console.log(`Drop Down selected index changed from ${args.oldIndex} to ${args.newIndex}`);
         for(let item of this.items) {
-            if(this.itemList[args.newIndex] == item.name) {
+            if(this.itemList[args.newIndex].display == item.name) {
                 this.router.navigate(["/item", item.id]);
             }
         }
@@ -32,9 +33,11 @@ export class ItemsComponent implements OnInit {
 
     ngOnInit(): void {
         this.items = this.itemService.getItems();
-        for(let item of this.items) 
-        {
-            this.itemList.push(item.name);
+        for(let item of this.items) {
+            this.itemList.push({
+                value: item.id,
+                display: item.name
+            });
         }
     }
 }
