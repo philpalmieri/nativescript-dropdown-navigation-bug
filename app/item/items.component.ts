@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, AfterViewChecked } from "@angular/core";
 import { Router } from "@angular/router";
 
 
@@ -12,7 +12,7 @@ import { SelectedIndexChangedEventData, ValueList } from "nativescript-drop-down
     moduleId: module.id,
     templateUrl: "./items.component.html",
 })
-export class ItemsComponent implements OnInit {
+export class ItemsComponent implements OnInit, AfterViewChecked {
     items: Item[];
     public itemList: ValueList<Object>;
     public selectedIndex: number = 0;
@@ -24,11 +24,8 @@ export class ItemsComponent implements OnInit {
 
     onchange(args: SelectedIndexChangedEventData) {
         console.log(`Drop Down selected index changed from ${args.oldIndex} to ${args.newIndex}`);
-        for(let item of this.items) {
-            if(this.itemList[args.newIndex].display == item.name) {
-                this.router.navigate(["/item", item.id]);
-            }
-        }
+        this.router.navigate(["/item", args.newIndex]);
+        
     }
 
     ngOnInit(): void {
@@ -39,5 +36,9 @@ export class ItemsComponent implements OnInit {
                 display: item.name
             });
         }
+    }
+
+    ngAfterViewChecked() {
+        console.log(this.itemList);
     }
 }
